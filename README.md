@@ -1,5 +1,9 @@
 ## 金陵医派五运六气
 
+本程序主要是为了五运六气金陵医派微信小程序提供后端数据服务，扫码体验
+
+![Alt text](fig/xcx.png)
+
 ### 原理
 
 运气结构图：
@@ -79,6 +83,79 @@
 
 ```pip install flask```
 
+### optional
+
+修改flask_demo.py文件中第25行代码，pem和key文件为自己的文件
+
+```app.run(host='0.0.0.0', port=8080, ssl_context=('8840426_zhongyi.wesky.online.pem', '8840426_zhongyi.wesky.online.key'))```
+
+如果不需要使用https，将25行代码改为
+
+```app.run(host='0.0.0.0', port=8080)```
+
+考虑到微信小程序必须使用8080端口，所以我们必须使用阿里云。但是阿里云上部署flask，会出现莫名的无响应的问题，无法解决。所以我们使用了nginx在阿里云（zhongyi.wesky.online）8080端口上做SSL反向代理，进入我们另外一台主机(ltcmf.ddns.net)5000端口上，对外链接访问方式保持不变，依旧是https://zhongyi.wesky.online:8080，实际上他确是在访问http://ltcmf.ddns.net:5000的服务。部署方式如下：
+
+```sudo apt-get install nginx
+sudo apt-get install nginx
+```
+
+修改/etc/nginx/sites-enabled/default文件并添加下列代码
+
+```
+server {
+        listen 8080;
+#       listen [::]:80;
+#
+        server_name  zhongyi.wesky.online;
+        ssl on;
+        ssl_certificate  cert/8840426_zhongyi.wesky.online.pem;
+        ssl_certificate_key  cert/8840426_zhongyi.wesky.online.key;
+        ssl_session_timeout  5m;
+        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:ECDHE:ECDH:AES:HIGH:!NULL:!aNULL:!MD5:!ADH:!RC4; #使用此加密套件。
+         ssl_protocols TLSv1 TLSv1.1 TLSv1.2; #使用该协议进行配置。
+         ssl_prefer_server_ciphers on;
+#
+#       root /var/www/example.com;
+#       index index.html;
+#
+        location / {
+#               try_files $uri $uri/ =404;
+            proxy_pass  http://ltcmf.ddns.net:5000;
+        }
+}
+```
+
+ 重启nginx服务即可
+
+```sudo service nginx restart
+sudo service nginx restart
+```
 
 
+
+### 服务测试链接
+
+https://zhongyi.wesky.online:8080/date?date=2022-11-15
+
+该链接可以测试到五运六气的json数据，形式如下
+
+```
+[{
+"gongli": "2022-11-15", 
+"nongli": "二零二二十月大廿二", 
+"ganzhi": "壬寅 辛亥 壬申", 
+"qi_shunxu": "终之气", 
+"jieqi": "小雪", 
+"sitian": "少阳相火（17）", 
+"keqi": "厥阴风木（410）", 
+"dayun": "厥阴风木（410）^", 
+"zhuqi": "太阳寒水（39）", 
+"zaiquan": "厥阴风木（410）", 
+"dong": "dong3", 
+"nan": "nan1", 
+"zhong": "zhong0", 
+"xi": "xi0", 
+"bei": "bei1"
+}]
+```
 
