@@ -37,9 +37,29 @@ def switch_qi(value):
         6: "终之气",
     }
 
-    return switcher.get(value, 'wrong qi value')
+    return switcher.get(value, 'wrong in qi value')
 
-
+# 灾宫依据：乙年：灾七宫；丁年：灾三宫；己年：灾五宫；辛年：灾一宫；癸年：灾九宫
+def switch_zaigong(value):
+    switcher = {
+        "乙": "灾七宫",
+        "丁": "灾三宫",
+        "己": "灾五宫",
+        "辛": "灾一宫",
+        "癸": "灾九宫",
+    }
+    return switcher.get(value, '')
+# 根据当天节气名字，来区分状态
+def switch_today_jieqi(value):
+    switcher = {
+        "春分": 2,
+        "小满": 3,
+        "大暑": 4,
+        "秋分": 5,
+        "小雪": 6,
+        "大寒": 1,
+    }
+    return switcher.get(value, "wrong in today jieqi")
 
 # 年份变化都是以春节为标识，进入下一年
 def switch_case(value):
@@ -178,6 +198,10 @@ def getKeQi(sitian, phasestatus):
 def getZhuQi(phasestatus):
     return switch_case(phasestatus)
 
+# 灾宫，从年干支得到
+def getZaiGong(year8char):
+    tiangan = getTianGan(year8char)
+    return switch_zaigong(tiangan)
 
 # 大运
 def getDaYun(year8char):
@@ -228,6 +252,7 @@ def getWuYunLiuQi(datetime):
                 "gongli": "1994-11-10", 
                 "nongli": "一九九四十月大初八", 
                 "ganzhi": "甲戌 乙亥 庚子", 
+                "zaigong": "灾三宫",
                 "qi_shunxu": "初之气",
                 "jieqi": "小雪", 
                 "sitian": "太阳寒水（39）", 
@@ -279,6 +304,11 @@ def getWuYunLiuQi(datetime):
     qi_shunxu = switch_qi(phasestatus)
     print("几之气:", qi_shunxu)
     dictdata[0]['qi_shunxu'] = qi_shunxu
+
+    # 从年干支得到灾宫
+    zaigong = getZaiGong(year8char)
+    print("灾宫:", zaigong)
+    dictdata[0]['zaigong'] = zaigong
 
     ### 先考虑司天、客气、主气、在泉的结果
     ## 春节在大寒后，还有可能春节在立春后，过了春节就进入下一年干支了，总之春节肯定在大寒后
