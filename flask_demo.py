@@ -22,4 +22,4 @@ def output():
         return gc.getWuYunLiuQi(request.args.get('date'))
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=8080, ssl_context=('8840426_zhongyi.wesky.online.pem', '8840426_zhongyi.wesky.online.key'))
+    app.run(host='0.0.0.0', port=5000)
