@@ -135,7 +135,7 @@ sudo service nginx restart
 
 ### 服务测试链接
 
-https://zhongyi.wesky.online:8080/date?date=2022-11-15
+https://zhongyi.wesky.online:8080/date?date=2022-11-15&phone=15651933973
 
 该链接可以测试到五运六气的json数据，形式如下
 
